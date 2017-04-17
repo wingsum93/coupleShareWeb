@@ -13,17 +13,17 @@ import java.util.Date;
 public class ProductQuantity {
     @Id
     @GeneratedValue
-    private String product_id;
+    private Long product_id;
     @Column(name = "quantity")
     private String quantity;
     @Column(name = "p_date")
     private Date stockInDate;
 
-    public String getProduct_id() {
+    public Long getProduct_id() {
         return product_id;
     }
 
-    public void setProduct_id(String product_id) {
+    public void setProduct_id(Long product_id) {
         this.product_id = product_id;
     }
 

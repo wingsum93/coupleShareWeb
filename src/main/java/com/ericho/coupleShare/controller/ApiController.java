@@ -1,9 +1,12 @@
 package com.ericho.coupleShare.controller;
 
+import com.ericho.coupleShare.exception.JException;
 import com.ericho.coupleShare.model.User;
 import com.ericho.coupleShare.rest.BaseSingleResponse;
 import com.ericho.coupleShare.service.ProductService;
 import com.ericho.coupleShare.service.UserService;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class ApiController {
     Logger log = LoggerFactory.getLogger(ApiController.class);
+    private Gson gson = new Gson();
     @Autowired
     private UserService userService;
 
@@ -24,27 +28,47 @@ public class ApiController {
 
     @RequestMapping("/register")
     @ResponseBody
-    public BaseSingleResponse<Void> registerUser(@RequestBody User user) {
-        boolean authenticate = true;
+    public BaseSingleResponse<String> registerUser(@RequestParam() String username,
+                                                   @RequestParam() String password) {
+        BaseSingleResponse<String> response = new BaseSingleResponse<>();
 
-        BaseSingleResponse<Void> response = new BaseSingleResponse<>();
-        response.setStatus(authenticate);
-        return response;
+        log.debug("username " + username + " password=" + password);
+        try {
+            userService.register(username, password);
+            boolean authenticate = true;
+            response.setStatus(authenticate);
+            response.setExtra("extra");
+            log.debug(gson.toJson(response));
+            return response;
+        } catch (Exception e) {
+            response.setStatus(false);
+            response.setErrorMessage(e.getMessage());
+            log.warn(gson.toJson(response));
+            return response;
+        }
     }
 
     @PostMapping("/login")
     @ResponseBody
     public BaseSingleResponse<Void> checkLogin(
             @RequestParam() String username,
-            @RequestParam() String password
-    ) {
+            @RequestParam() String password) {
         log.debug("login  username= " + username);
 
-        boolean authenticate = true;
-
         BaseSingleResponse<Void> response = new BaseSingleResponse<>();
-        response.setStatus(authenticate);
-        return response;
+        try {
+
+            boolean authenticate = userService.checkLogin(username, password);
+            ;
+            response.setStatus(authenticate);
+            log.debug(gson.toJson(response));
+            return response;
+        } catch (Exception e) {
+            response.setStatus(false);
+            response.setErrorMessage(e.getMessage());
+            log.warn(gson.toJson(response));
+            return response;
+        }
     }
 
     @RequestMapping("/changePassword")

@@ -1,6 +1,7 @@
 package com.ericho.coupleShare.service;
 
 import com.ericho.coupleShare.dao.UserDao;
+import com.ericho.coupleShare.exception.JException;
 import com.ericho.coupleShare.model.User;
 import com.ericho.coupleShare.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,13 @@ public class UserServiceImpl implements UserService {
     public UserDao userDao;
 
     @Override
-    public void save(User user) {
+    public void register(String login, String password) throws JException {
+        User prevUser = userDao.findByUsername(login);
+        if (prevUser != null) throw new JException("account already register");
+
+        User user = new User();
+        user.setName(login);
+        user.setPassword(password);
         userDao.save(user);
     }
 
