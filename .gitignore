@@ -12,3 +12,6 @@
 generated/
 generated_tests/
 src/test/
+/bin/
+.classpath
+.project
