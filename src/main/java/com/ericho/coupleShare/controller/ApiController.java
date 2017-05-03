@@ -10,8 +10,12 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.annotation.MultipartConfig;
 
 @Controller
 @RequestMapping("/api")
@@ -23,6 +27,16 @@ public class ApiController {
 
     @Autowired
     private ProductService productService;
+    
+    
+    //              for properties
+//    @Value("#{systemProperties.myProp}")
+    private String filePath;
+    
+    
+    
+    
+    
     //-----------------------------------------------------------------------------
 
 
@@ -79,5 +93,31 @@ public class ApiController {
         BaseSingleResponse<Void> response = new BaseSingleResponse<>();
         response.setStatus(authenticate);
         return response;
+    }
+
+
+
+    @RequestMapping(path = "/uploadPhoto",method = RequestMethod.POST)
+    @ResponseBody
+    public BaseSingleResponse<String> changePassword(
+            @RequestHeader("token") String token,
+            @RequestParam("photo") MultipartFile multipartFile,
+            @RequestParam("tags") String tags
+            ) {
+
+        BaseSingleResponse<String> response = new BaseSingleResponse<>();
+        try {
+
+            boolean authenticate = true;
+            ;
+            response.setStatus(authenticate);
+            log.debug(gson.toJson(response));
+            return response;
+        } catch (Exception e) {
+            response.setStatus(false);
+            response.setErrorMessage(e.getMessage());
+            log.warn(gson.toJson(response));
+            return response;
+        }
     }
 }
